@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Ricardo/Desktop/jsch-0.1.54.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Ricardo/Desktop/j2ssh-maverick-1.5.5-bin.zip"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Ricardo/Desktop/sshj-0.8.1.jar.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
