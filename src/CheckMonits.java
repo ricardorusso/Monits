@@ -1,10 +1,8 @@
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
@@ -19,22 +17,25 @@ import com.jcraft.jsch.SftpException;
 
 
 public abstract class CheckMonits {
-	static final int everyday =9;
+	
+	private static final int EVERYDAY =69;
+	private static final int QUINZENAL = 15;
 	private static final String OK = "----------------OK--------------";
 	private static final String NOK = "----------------NOK--------------";
 
-	static SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 
 	static Date date = new Date(System.currentTimeMillis());
 	static Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Europe/Lisbon"));
 
 	static Map<Monits, Integer> map = new HashMap<Monits, Integer>();
 
-	public static void loadMaps() {
-		map.put(new Monits("Novo", "/nova"), everyday);
-		map.put(Monits.m1, everyday);
+	private static void loadMaps() {
+		map.put(new Monits("BATCH1", "/"), EVERYDAY);
+		map.put(new Monits("BATCH2", "/nova"), EVERYDAY);
+		map.put(new Monits("BATCH3", "/nova"), QUINZENAL);
+
+		
 	}
-	//static Set<Integer> especialCases = new HashSet<Integer>(Arrays.asList(15)) ;
 	public static long avgFileSize(Vector<LsEntry> vector) {
 		long avg = 0;
 		int count = 0;
@@ -56,8 +57,14 @@ public abstract class CheckMonits {
 		    
 		session.setConfig("StrictHostKeyChecking", "no");
 		System.out.println("Establishing Connection...");
-		session.connect();
-		    System.out.println("Connection established.");
+		
+		if(session.isConnected()) {
+			session.disconnect();
+		}else {
+			session.connect();
+			System.out.println("Connection established.");
+		}	
+		
 		System.out.println("Creating SFTP Channel.");
 		ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
 		sftpChannel.connect();
@@ -65,25 +72,27 @@ public abstract class CheckMonits {
  			
 		//data hoje
 		c.setTime(date);
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		String dataStr = format.format(date);	
 		
 		loadMaps();
 		boolean ok = false;
-		System.out.println("Data: " + dataStr + " |Dia: " + date.getDay() + "\n");
+		System.out.println("Data: " + dataStr + " |Dia do mês: " + c.get(Calendar.DAY_OF_MONTH)+ "\n");
 		boolean size = true;
 		for (Entry<Monits, Integer> entry : map.entrySet()) {
-			List<LsEntry> vector = new ArrayList<LsEntry>(sftpChannel.ls(entry.getKey().getDir())) ;
+			Vector <LsEntry> vector = sftpChannel.ls(entry.getKey().getDir()) ;
 			
-			if(entry.getValue() == date.getDay() ||entry.getValue() == everyday) {
+			if(entry.getValue() == c.get(Calendar.DAY_OF_MONTH) ||entry.getValue() == EVERYDAY) {
 				if(vector.isEmpty()) {
 					System.out.println("Diretorio vazio");
 					System.out.println(NOK);
-					return;
+					break;
 				}
 				for (LsEntry string : vector) {
 				
 					if(string.getFilename().contains(dataStr) && (string.getFilename().endsWith(".csv")||string.getFilename().endsWith(".txt")||string.getFilename().endsWith(".xlsx"))) {
-						if(string.getAttrs().getSize() == 0) {	
+						if(string.getAttrs().getSize() == 0) {
+							
 							size = false;		
 							System.out.println("\n"+entry.getKey().getNameBatch()+ " Tamanho zero ");
 							System.out.println(NOK);

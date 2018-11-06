@@ -16,17 +16,24 @@ public class Monits {
 	private String nameBatch;
 	//private List<String> lista;
 	private String dir;
+	private String specialCase;
+	
 	
 
 	public String getDir() {
 		return dir;
+	}
+	public String getSpecialCase() {
+		return specialCase;
+	}
+	public void setSpecialCase(String specialCase) {
+		this.specialCase = specialCase;
 	}
 	public void setDir(String dir) {
 		this.dir = dir;
 	}
 	private static final List<String> listaBatchDir = Arrays.asList(new File("D:\\FileEx").list());
 
-	static final Monits m1 = new Monits("BATCH1", "/");
 
 	public String getNameBatch() {
 		return nameBatch;
