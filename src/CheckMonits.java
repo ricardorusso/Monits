@@ -25,7 +25,7 @@ public abstract class CheckMonits {
 
 
 	static Date date = new Date(System.currentTimeMillis());
-	static Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Europe/Lisbon"));
+
 
 	static Map<Monits, Integer> map = new HashMap<Monits, Integer>();
 
@@ -49,7 +49,7 @@ public abstract class CheckMonits {
 		return (avg/count);
 	}
 	public static void check() throws JSchException, SftpException {
-		
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Lisbon"));
 		//connect
 		JSch jsch = new JSch();
 		Session session = jsch.getSession("user", "localhost", 22);
@@ -71,18 +71,18 @@ public abstract class CheckMonits {
 		System.out.println("SFTP Channel created.");
  			
 		//data hoje
-		c.setTime(date);
+		calendar.setTime(date);
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		String dataStr = format.format(date);	
 		
 		loadMaps();
 		boolean ok = false;
-		System.out.println("Data: " + dataStr + " |Dia do mês: " + c.get(Calendar.DAY_OF_MONTH)+ "\n");
+		System.out.println("Data: " + dataStr + " |Dia do mês: " + calendar.get(Calendar.DAY_OF_MONTH)+ "\n");
 		boolean size = true;
 		for (Entry<Monits, Integer> entry : map.entrySet()) {
 			Vector <LsEntry> vector = sftpChannel.ls(entry.getKey().getDir()) ;
 			
-			if(entry.getValue() == c.get(Calendar.DAY_OF_MONTH) ||entry.getValue() == EVERYDAY) {
+			if(entry.getValue() == calendar.get(Calendar.DAY_OF_MONTH) ||entry.getValue() == EVERYDAY) {
 				if(vector.isEmpty()) {
 					System.out.println("Diretorio vazio");
 					System.out.println(NOK);
@@ -98,9 +98,9 @@ public abstract class CheckMonits {
 							System.out.println(NOK);
 							break;
 						}
-						ok = true;
-					
+						ok = true;				
 						System.out.println("\n"+entry.getKey().getNameBatch());
+						System.out.println("\n"+string.getFilename());
 						System.out.println(OK);
 					}
 				}

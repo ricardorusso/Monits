@@ -51,7 +51,6 @@ public class Monits {
 //	}
 	public Monits(String nameBatch, String diretorio) {
 		super();
-
 		this.nameBatch = nameBatch;
 		this.dir = diretorio;
 		//this.lista = Arrays.asList(new File(diretorio).list());
